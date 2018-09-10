@@ -1,0 +1,231 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+data:
+  ytz_nginx.conf: |
+    upstream ytz_dforcepro_com {
+      server beta-ytzapi:9080;
+    }
+    upstream ydtuser_dforcepro_com {
+      server beta-ydtapi:9080;
+      
+    }
+    upstream ydtadmin_dforcepro_com {
+      server beta-ydtadmin:9080;
+    }
+    upstream ydtgateway_dforcepro_com {
+      server beta-ydtgateway:9080;
+    }
+    #upstream letsencrypt {
+      #server ytz-api-letsencrypt-service:80 max_fails=0 fail_timeout=1s;
+    #}
+
+    server {
+      listen        80;
+      server_name   beta-api.ytz.dforcepro.com;
+      access_log    /var/log/nginx/access_api_ytz.log main;
+
+      location / {
+        proxy_pass   http://ytz_dforcepro_com;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # reference https://gist.github.com/Stanback/7145487
+        set $cors 'true';
+
+        if ($cors = 'true') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # required to be able to read Authorization header in frontend
+            #add_header 'Access-Control-Expose-Headers' 'Authorization' always;
+        }
+
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # Tell client that this pre-flight info is valid for 20 days
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
+      }
+      # location ^~ /.well-known {
+      #   proxy_pass http://letsencrypt;
+      # }
+    }
+    server {
+      listen      443           ssl http2;
+      listen [::]:443           ssl http2;
+      server_name               beta-api.ytz.dforcepro.com;
+
+      ssl                       on;
+
+      add_header                Strict-Transport-Security "max-age=31536000" always;
+
+      ssl_session_cache         shared:SSL:20m;
+      ssl_session_timeout       10m;
+
+      ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
+      ssl_prefer_server_ciphers on;
+      ssl_ciphers               "ECDH+AESGCM:ECDH+AES256:ECDH+AES128:!ADH:!AECDH:!MD5;";
+
+      ssl_stapling              on;
+      ssl_stapling_verify       on;
+      resolver                  8.8.8.8 8.8.4.4;
+
+      ssl_certificate           /etc/letsencrypt/live/beta-api.ytz.dforcepro.com/tls.crt;
+      ssl_certificate_key       /etc/letsencrypt/live/beta-api.ytz.dforcepro.com/tls.key;
+
+      access_log                /var/log/nginx/access_cert.log;
+      error_log                 /var/log/nginx/access_cert.eror;
+
+      # other configs
+      location / {
+        proxy_pass   http://ytz_dforcepro_com;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # reference https://gist.github.com/Stanback/7145487
+        set $cors 'true';
+
+        if ($cors = 'true') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # required to be able to read Authorization header in frontend
+            #add_header 'Access-Control-Expose-Headers' 'Authorization' always;
+        }
+
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # Tell client that this pre-flight info is valid for 20 days
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
+      }
+    }
+    server {
+      listen      443           ssl http2;
+      listen [::]:443           ssl http2;
+      server_name               beta-api.ydt.dforcepro.com;
+
+      ssl                       on;
+
+      add_header                Strict-Transport-Security "max-age=31536000" always;
+
+      ssl_session_cache         shared:SSL:20m;
+      ssl_session_timeout       10m;
+
+      ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
+      ssl_prefer_server_ciphers on;
+      ssl_ciphers               "ECDH+AESGCM:ECDH+AES256:ECDH+AES128:!ADH:!AECDH:!MD5;";
+
+      ssl_stapling              on;
+      ssl_stapling_verify       on;
+      resolver                  8.8.8.8 8.8.4.4;
+
+      ssl_certificate           /etc/letsencrypt/live/beta-api.ytz.dforcepro.com/tls.crt;
+      ssl_certificate_key       /etc/letsencrypt/live/beta-api.ytz.dforcepro.com/tls.key;
+
+      access_log                /var/log/nginx/access_cert.log;
+      error_log                 /var/log/nginx/access_cert.eror;
+
+      # other configs
+      location ^~ /user/ {
+        rewrite ^/user/(.*)$ /$1 break;
+        proxy_pass   http://ydtuser_dforcepro_com;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # reference https://gist.github.com/Stanback/7145487
+        set $cors 'true';
+
+        if ($cors = 'true') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # required to be able to read Authorization header in frontend
+            #add_header 'Access-Control-Expose-Headers' 'Authorization' always;
+        }
+
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # Tell client that this pre-flight info is valid for 20 days
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
+      }
+      location ^~ /admin/ {
+        rewrite ^/admin/(.*)$ /$1 break;
+        proxy_pass   http://ydtadmin_dforcepro_com;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # reference https://gist.github.com/Stanback/7145487
+        set $cors 'true';
+
+        if ($cors = 'true') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # required to be able to read Authorization header in frontend
+            #add_header 'Access-Control-Expose-Headers' 'Authorization' always;
+        }
+
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # Tell client that this pre-flight info is valid for 20 days
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
+      }
+      location ^~ /gateway/ {
+        rewrite ^/gateway/(.*)$ /$1 break;
+        proxy_pass   http://ydtgateway_dforcepro_com;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # reference https://gist.github.com/Stanback/7145487
+        set $cors 'true';
+
+        if ($cors = 'true') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # required to be able to read Authorization header in frontend
+            #add_header 'Access-Control-Expose-Headers' 'Authorization' always;
+        }
+
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With,token,system,X-DEVICE-ID' always;
+            # Tell client that this pre-flight info is valid for 20 days
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Type' 'text/plain charset=UTF-8';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
+      }
+    }

@@ -1,0 +1,36 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: beta-sql-volumn0
+  labels:
+    type: local
+    dforcepro: sql
+spec:
+  storageClassName: local
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/sql"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: beta-sql-claim0
+  name: beta-sql-claim0
+spec:
+  storageClassName: local
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  selector: 
+    matchLabels:
+      dforcepro: sql
+status: {}
+
+---

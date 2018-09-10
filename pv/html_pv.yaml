@@ -1,0 +1,39 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: beta-web-volumn0
+  labels:
+    type: local
+    dforcepro: nginx
+spec:
+  storageClassName: local
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/html_formal"
+    
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: beta-web-claim0
+  name: beta-web-claim0
+spec:
+  storageClassName: local
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+  selector: 
+    matchLabels:
+      dforcepro: nginx
+status: {}
+---

@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "dns-redirect-ingress-service"
+spec:
+  tls:
+  - hosts:
+    - beta-api.ytz.dforcepro.com
+    secretName: api-ytz-letsencrypt-certs # Name of the secret
+  rules:
+  - host: beta-api.ytz.dforcepro.com # CHANGE ME!
+    http:
+      paths:
+      # The * is needed so that all traffic gets redirected to nginx
+      - path: /*
+        backend:
+          serviceName: nginx
+          servicePort: 80

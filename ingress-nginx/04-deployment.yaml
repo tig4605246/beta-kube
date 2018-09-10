@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: "nginx"
+  name: nginx
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      hostNetwork: true
+      serviceAccountName: nginx-ingress
+      containers:
+        - name: nginx
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.12.0
+          args:
+            - /nginx-ingress-controller
+            - --default-backend-service=$(POD_NAMESPACE)/http-svc
+            - --configmap=$(POD_NAMESPACE)/nginx
+            #- --publish-service=$(POD_NAMESPACE)/nginx
+            - --v=3
+            - --ingress-class=nginx
+            #- --default-ssl-certificate=$(POD_NAMESPACE)/beta-api
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+          - name: http
+            containerPort: 80
+          - name: https
+            containerPort: 443
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 3

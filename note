@@ -1,0 +1,4 @@
+Build and push to private repo:
+sudo ./build_docker_image.sh beta beta-1.1.0
+sudo docker tag ytz:beta-1.0.9 localhost:5000/ytz-1.0.9
+sudo docker push localhost:5000/ytz-1.0.8

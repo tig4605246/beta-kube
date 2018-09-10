@@ -1,0 +1,60 @@
+mongodb:
+    host: beta-mongodb.default:57001
+    user: ""
+    pass: ""
+
+sql:
+    host: beta-sql.default
+    port: 3306
+    user: dforcepro
+    pass: 1234
+
+elastic:
+    host: beta-search.default
+    port: 9200
+
+redis:
+    host: beta-redis.default:6379
+    pass: ""
+    db: 0
+
+log:
+    path: /var/log
+    duration: hour   # day - hour - minute
+    debug: true      # false(關閉) | true(開啟)
+    
+api:
+    port: 9080
+    middle:
+        auth: false
+        gen_doc: true
+        log: true
+        debug: true
+
+rabbitmq:
+    broker: 'amqp://rd:1234@beta-rabbitmq.default:5672/'
+    default_queue: ytz_tasks
+    result_backend: 'redis://beta-redis.default:6379'
+    results_expire_in: 3600
+    amqp:
+        binding_key: ytz_tasks
+        exchange: machinery_exchange
+        exchange_type: direct
+        prefetch_count: 3
+
+simulate:
+    devices:
+        - MacAddress: "00-00-00-00-00-00"
+          GWID: "5a4d94c722af1200018a6cb5"
+        - MacAddress: "AA-BB-CC-DD-EE-FF"
+          GWID: "a00000000000000000000001"
+        - MacAddress: "AA-BB-CC-DD-EE-GG"
+          GWID: "a00000000000000000000002"
+        - MacAddress: "AA-BB-CC-DD-EE-HH"
+          GWID: "a00000000000000000000003"
+        - MacAddress: "AA-BB-CC-DD-EE-II"
+          GWID: "a00000000000000000000004"
+        - MacAddress: "AA-BB-CC-DD-EE-JJ"
+          GWID: "a00000000000000000000005"
+        - MacAddress: "AA-BB-CC-DD-EE-BB"
+          GWID: "f00000000000000000000001"

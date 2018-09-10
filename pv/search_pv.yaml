@@ -1,0 +1,35 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: beta-search-volumn0
+  labels:
+    dforcepro: search
+    type: local
+spec:
+  storageClassName: local
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/search"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: beta-search-claim0
+  name: beta-search-claim0
+spec:
+  storageClassName: local
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  selector: 
+    matchLabels:
+      dforcepro: search
+status: {}
+---

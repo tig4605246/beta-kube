@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: ./kompose convert -f docker-compose.yml
+    kompose.version: 1.8.0 (0c0c027)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: beta-redis
+  name: beta-redis
+spec:
+  ports:
+  - name: "6379"
+    port: 6379
+    targetPort: 0
+  selector:
+    io.kompose.service: beta-redis
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: ./kompose convert -f docker-compose.yml
+    kompose.version: 1.8.0 (0c0c027)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: beta-redis
+  name: beta-redis
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: beta-redis
+    spec:
+      containers:
+      - image: 'redis:4.0.6'
+        name: beta-redis
+        ports:
+        ports:
+        - containerPort: 6379
+        resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,48 @@
+mongodb:
+    host: beta-mongodb.default:57001
+    user: ""
+    pass: ""
+
+sql:
+    host: beta-sql.default
+    port: 3306
+    user: dforcepro
+    pass: 1234
+
+elastic:
+    host: beta-search.default
+    port: 9200
+
+redis:
+    host: beta-redis.default:6379
+    pass: ""
+    db: 0
+
+log:
+    path: /var/log
+    duration: hour   # day - hour - minute
+    debug: true      # false(關閉) | true(開啟)
+
+rabbitmq:
+    broker: 'amqp://rd:1234@beta-rabbitmq.default:5672/'
+    default_queue: ydt
+    result_backend: 'redis://beta-redis.default:6379'
+    results_expire_in: 3600
+    amqp:
+        binding_key: ydt
+        exchange: machinery_exchange
+        exchange_type: direct
+        prefetch_count: 3
+        
+api:
+    port: 9080
+    middle:
+        auth: true
+        gen_doc: false
+        log: false
+        debug: false
+
+sysMap:
+    f9632af07ff6a91d720a1ab15e698c7e: ydt-admin
+    17d533b7f6d0f550e538695537580d2e: ydt-gateway
+    3a81577f23161668d2fb9a6bc1b0a54d: ydt-app

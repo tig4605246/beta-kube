@@ -1,0 +1,39 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: beta-mongodb-volumn0
+  labels:
+    type: local
+    dforcepro: mongodb
+spec:
+  storageClassName: local
+  capacity:
+    storage: 1.8Ti
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/mnt/nas/mongodb"
+    
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: beta-mongodb-claim0
+  name: beta-mongodb-claim0
+spec:
+  storageClassName: local
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1.8Ti
+  selector: 
+    matchLabels:
+      dforcepro: mongodb
+status: {}
+---
